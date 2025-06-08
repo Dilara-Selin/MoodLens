@@ -1,3 +1,11 @@
+##
+# @file moodlens_analysis.py
+# @author Dilara Selin SALCI
+# @brief Bu dosya, videolarda konuşan kişileri tanıyan, duygu durumlarını analiz eden
+#        ve konuşma süresi ile metnini çıkaran bir analiz sistemini içerir.
+#        DeepFace, KNN, CNN modelleri ve Google Speech Recognition kullanmaktadır.
+##
+
 import yt_dlp
 import cv2
 import numpy as np
@@ -8,8 +16,14 @@ import time
 import os
 import speech_recognition as sr
 from pydub import AudioSegment
+from moviepy.editor import VideoFileClip
 
-# YouTube videosunu indirme fonksiyonu
+##
+# @brief Belirtilen YouTube videosunu MP4 formatında indirir.
+# @param youtube_url İndirilecek YouTube video URL’si.
+# @param output_path Videonun kaydedileceği dosya adı (varsayılan: "aysu_video.mp4").
+# @return Kaydedilen video dosyasının yolu.
+##
 def download_video(youtube_url, output_path="aysu_video.mp4"):
     ydl_opts = {
         'outtmpl': output_path,
@@ -24,7 +38,10 @@ def download_video(youtube_url, output_path="aysu_video.mp4"):
     print("Video indirildi!")
     return output_path
 
-# Video analiz fonksiyonu (yüz tanıma + duygu analizi)
+##
+# @brief Videodaki birden fazla yüzü tanır ve her biri için duygu analizi yapar.
+# @param video_path Analiz edilecek video dosyasının yolu.
+##
 def analyze_video_multi_face(video_path):
     face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
     knn_model = joblib.load("face_knn_model.pkl")
@@ -69,7 +86,9 @@ def analyze_video_multi_face(video_path):
     cap.release()
     cv2.destroyAllWindows()
 
-
+##
+# @brief Canlı kamera akışında yüz tanıma ve duygu analizi yapar.
+##
 def live_camera_analysis():
     face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
     knn_model = joblib.load("face_knn_model.pkl")
@@ -96,7 +115,6 @@ def live_camera_analysis():
         for (x, y, w, h) in faces:
             face_img = frame[y:y+h, x:x+w]
 
-            # Yüz Tanıma
             try:
                 rgb_face = cv2.cvtColor(face_img, cv2.COLOR_BGR2RGB)
                 result = DeepFace.represent(img_path=rgb_face, model_name="Facenet", enforce_detection=False)
@@ -111,7 +129,6 @@ def live_camera_analysis():
             except Exception as e:
                 print(f"Yüz Tanıma Hatası: {e}")
 
-            # Duygu Analizi
             try:
                 resized_face = cv2.resize(face_img, (48, 48))
                 resized_face = resized_face / 255.0
@@ -135,26 +152,28 @@ def live_camera_analysis():
     cap.release()
     cv2.destroyAllWindows()
 
-# --- Yeni Fonksiyonlar ---
-
+##
+# @brief Videodan sesi çıkarır ve WAV formatında kaydeder.
+# @param video_path İşlenecek video dosyasının yolu.
+# @param output_audio_path Oluşturulacak ses dosyasının yolu (varsayılan: "temp_audio.wav").
+# @return Oluşturulan ses dosyasının yolu.
+##
 def extract_audio_from_video(video_path, output_audio_path="temp_audio.wav"):
-    """
-    Videodan sesi çıkarır ve wav formatında kaydeder.
-    """
-    from moviepy.editor import VideoFileClip
-
     video = VideoFileClip(video_path)
     audio = video.audio
     audio.write_audiofile(output_audio_path, codec='pcm_s16le')
     audio.close()
     video.close()
-
     return output_audio_path
 
+##
+# @brief WAV dosyasını yazıya çevirir ve toplam ses süresini dakika olarak döndürür.
+# @param audio_path Yazıya çevrilecek ses dosyasının yolu.
+# @return (transcribed_text, duration_minute): Yazıya dökülmüş metin ve süresi (dakika cinsinden).
+# @throws sr.UnknownValueError Konuşma anlaşılamadığında.
+# @throws sr.RequestError Google API erişim hatası oluştuğunda.
+##
 def transcribe_audio(audio_path):
-    """
-    SpeechRecognition kullanarak wav dosyasını yazıya çevirir ve toplam ses süresini dakika olarak verir.
-    """
     recognizer = sr.Recognizer()
     audio_file = sr.AudioFile(audio_path)
 
@@ -168,13 +187,17 @@ def transcribe_audio(audio_path):
     except sr.RequestError as e:
         text = f"[Google API hatası: {e}]"
 
-    # Toplam konuşma süresi (dakika)
     audio_seg = AudioSegment.from_wav(audio_path)
     duration_sec = audio_seg.duration_seconds
     duration_min = round(duration_sec / 60, 2)
 
     return text, duration_min
 
+##
+# @brief Videodaki kişileri tanır, duygularını analiz eder, ses verisini yazıya çevirir ve süre analizini yapar.
+# @param video_path Analiz edilecek video dosyasının yolu.
+# @return Tanınan kişiler, duyguları, görünme süresi, konuşma metni ve ses süresini içeren detaylı rapor (metin formatında).
+##
 def identify_speaker_transcribe_and_emotion(video_path):
     face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
     knn_model = joblib.load("face_knn_model.pkl")
@@ -183,12 +206,12 @@ def identify_speaker_transcribe_and_emotion(video_path):
     cap = cv2.VideoCapture(video_path)
     fps = cap.get(cv2.CAP_PROP_FPS)
 
-    detected_faces = {}  # {isim: duygu}
-    appearance_counts = {}  # {isim: toplam_görünme_kare_sayısı}
+    detected_faces = {}
+    appearance_counts = {}
 
     frame_counter = 0
     total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-    max_frames_to_process = min(1000, total_frames)  # Performans için sınır (isteğe göre artırılabilir)
+    max_frames_to_process = min(1000, total_frames)
 
     while frame_counter < max_frames_to_process:
         ret, frame = cap.read()
@@ -220,21 +243,16 @@ def identify_speaker_transcribe_and_emotion(video_path):
             if name not in detected_faces:
                 detected_faces[name] = emotion
 
-            if name not in appearance_counts:
-                appearance_counts[name] = 1
-            else:
-                appearance_counts[name] += 1
+            appearance_counts[name] = appearance_counts.get(name, 0) + 1
 
         frame_counter += 1
 
     cap.release()
 
-    # --- Ses çıkarma ve yazıya çevirme ---
     audio_path = extract_audio_from_video(video_path)
     transcription, duration_min = transcribe_audio(audio_path)
     os.remove(audio_path)
 
-    # --- Sonuçları yazdır ---
     result_lines = ["Görüntüde Tanınan Kişiler ve Duyguları:"]
     for name, emotion in detected_faces.items():
         result_lines.append(f"- {name}: {emotion}")

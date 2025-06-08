@@ -1,0 +1,47 @@
+\doxysection{app.\+py File Reference}
+\hypertarget{app_8py}{}\label{app_8py}\index{app.py@{app.py}}
+
+
+Streamlit arayüzü ile video ve canlı kamera üzerinden duygu analizi yapan uygulama.  
+
+
+\doxysubsubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+namespace \mbox{\hyperlink{namespaceapp}{app}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{namespaceapp_a2514b6bb9c9d603b33c005cadfae8e17}{app.\+video\+\_\+url}} = st.\+text\+\_\+input("{}🎬 You\+Tube video linkini buraya yapıştır güzelim\+:"{})
+\item 
+\mbox{\hyperlink{namespaceapp_a71c1c740b2ed49670cfe36bb5e54524c}{app.\+video\+\_\+path}} = download\+\_\+video(\mbox{\hyperlink{namespaceapp_a2514b6bb9c9d603b33c005cadfae8e17}{video\+\_\+url}})
+\begin{DoxyCompactList}\small\item\em You\+Tube videosunu indir ve göster. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespaceapp_a538222c0504e469e4b1bba8707c03583}{app.\+results}} = analyze\+\_\+video(\mbox{\hyperlink{namespaceapp_a71c1c740b2ed49670cfe36bb5e54524c}{video\+\_\+path}})
+\begin{DoxyCompactList}\small\item\em İndirilen videoyu analiz et ve sonuçları göster. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespaceapp_a961e76fb8ef025010a52b2203a6a9ce7}{app.\+uploaded\+\_\+file}} = st.\+file\+\_\+uploader("{}💻 Bilgisayardan video yükle (MP4, MOV, AVI)"{}, type=\mbox{[}"{}mp4"{}, "{}mov"{}, "{}avi"{}\mbox{]})
+\item 
+\mbox{\hyperlink{namespaceapp_a522388dd3bc85e169f28cdc7060efe50}{app.\+delete}}
+\begin{DoxyCompactList}\small\item\em Bilgisayardan yüklenen videoyu geçici olarak kaydet ve analiz et. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespaceapp_a19c9c557a497d116b10b73eed353bb32}{app.\+False}}
+\item 
+\mbox{\hyperlink{namespaceapp_a3e4cc145f5b24692379226e1007f1ca0}{app.\+suffix}}
+\item 
+\mbox{\hyperlink{namespaceapp_accb00634b3f695e5bb3304f8c48af5ee}{app.\+tmp\+\_\+video\+\_\+path}} = tmp\+\_\+file.\+name
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Streamlit arayüzü ile video ve canlı kamera üzerinden duygu analizi yapan uygulama. 
+
+Bu uygulama You\+Tube videosu ya da bilgisayardan yüklenen videoları analiz eder ve canlı kamera üzerinden gerçek zamanlı duygu tespiti gerçekleştirir.
+
+\begin{DoxyAuthor}{Author}
+Dilara Selin SALCI 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+2025-\/06-\/08 
+\end{DoxyDate}
+\begin{DoxyVersion}{Version}
+1.\+0 
+\end{DoxyVersion}

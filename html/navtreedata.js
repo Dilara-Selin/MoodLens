@@ -24,12 +24,24 @@
 */
 var NAVTREE =
 [
-  [ "My Project", "index.html", ]
+  [ "Konuşan Kişi ve Duygu Analizi Projesi", "index.html", [
+    [ "Namespaces", "namespaces.html", [
+      [ "Namespace List", "namespaces.html", "namespaces_dup" ],
+      [ "Namespace Members", "namespacemembers.html", [
+        [ "All", "namespacemembers.html", null ],
+        [ "Functions", "namespacemembers_func.html", null ],
+        [ "Variables", "namespacemembers_vars.html", null ]
+      ] ]
+    ] ],
+    [ "Files", "files.html", [
+      [ "File List", "files.html", "files_dup" ]
+    ] ]
+  ] ]
 ];
 
 var NAVTREEINDEX =
 [
-"index.html"
+"app_8py.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronization';

@@ -1,6 +1,23 @@
+"""
+@file app.py
+@brief Streamlit arayüzü ile video ve canlı kamera üzerinden duygu analizi yapan uygulama.
+
+Bu uygulama YouTube videosu ya da bilgisayardan yüklenen videoları analiz eder
+ve canlı kamera üzerinden gerçek zamanlı duygu tespiti gerçekleştirir.
+
+@author Dilara Selin SALCI
+@date 2025-06-08
+@version 1.0
+"""
+
 import streamlit as st
 from functions import download_video, analyze_video, live_camera_analysis
 import tempfile
+
+"""
+@mainpage MoodLens - Duygu Analizi Arayüzü
+Bu ana sayfa, kullanıcıdan video veya canlı görüntü alarak yapay zeka destekli duygu tespiti yapar.
+"""
 
 st.title("🎥 Video & Kamera Duygu Analizi")
 
